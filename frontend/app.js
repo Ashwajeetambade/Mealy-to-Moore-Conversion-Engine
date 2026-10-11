@@ -290,11 +290,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Resolve API Endpoint (Local, Reverse Proxy, or Render Backend)
   function getApiEndpoint(path) {
-    const customBase = window.RENDER_BACKEND_URL || localStorage.getItem('RENDER_BACKEND_URL') || '';
+    const customBase =
+      window.RENDER_BACKEND_URL ||
+      localStorage.getItem('RENDER_BACKEND_URL') ||
+      localStorage.getItem('RENDER BACKEND URL') ||
+      localStorage.getItem('BACKEND_API_URL');
+
     if (customBase) {
-      return `${customBase.replace(/\/$/, '')}${path}`;
+      return `${customBase.trim().replace(/\/$/, '')}${path}`;
     }
-    return path;
+
+    // If running on local server (localhost, 127.0.0.1, or local Wi-Fi IP), use relative /api/
+    const host = window.location.hostname;
+    const isLocal = host === 'localhost' ||
+                    host === '127.0.0.1' ||
+                    host.startsWith('192.168.') ||
+                    host.startsWith('10.') ||
+                    host === '';
+
+    if (isLocal) {
+      return path;
+    }
+
+    // Automatic default for cloud deployments (e.g., Vercel)
+    return `https://mealy-backend-4hh0.onrender.com${path}`;
   }
 
   // Trigger Conversion (Asynchronous with Backend API + Local Engine Fallback)
