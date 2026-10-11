@@ -288,13 +288,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Resolve API Endpoint (Local, Reverse Proxy, or Render Backend)
+  function getApiEndpoint(path) {
+    const customBase = window.RENDER_BACKEND_URL || localStorage.getItem('RENDER_BACKEND_URL') || '';
+    if (customBase) {
+      return `${customBase.replace(/\/$/, '')}${path}`;
+    }
+    return path;
+  }
+
   // Trigger Conversion (Asynchronous with Backend API + Local Engine Fallback)
   async function runConversion() {
     const mealy = getMealyMachineFromUI();
     let result = null;
 
     try {
-      const resp = await fetch('/api/convert', {
+      const resp = await fetch(getApiEndpoint('/api/convert'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(mealy)
@@ -366,7 +375,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let simResult = null;
     try {
-      const resp = await fetch('/api/simulate', {
+      const resp = await fetch(getApiEndpoint('/api/simulate'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
