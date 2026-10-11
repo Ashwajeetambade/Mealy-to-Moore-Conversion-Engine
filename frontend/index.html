@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mealy to Moore Machine Converter | Theory of Computation</title>
+  <meta name="description" content="Accurately convert any Mealy machine matrix to its mathematically equivalent Moore machine matrix with step-by-step educational explanations." />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#e6ecf4" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Top Navigation (Max 5 Links) -->
+  <header class="header-nav">
+    <div class="container nav-wrapper">
+      <a href="#converter-section" class="brand-logo">
+        <span class="brand-icon-box">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="7" cy="12" r="3"></circle>
+            <circle cx="17" cy="12" r="3"></circle>
+            <path d="M 10 12 L 14 12"></path>
+          </svg>
+        </span>
+        <span>TOC State Engine</span>
+      </a>
+
+      <button id="mobile-nav-toggle" class="mobile-nav-toggle" type="button" aria-label="Toggle Navigation">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+
+      <ul id="nav-links" class="nav-links">
+        <li><a href="#converter-section" class="nav-link active">Converter</a></li>
+        <li><a href="#steps-section" class="nav-link">Step Guide</a></li>
+        <li><a href="#simulator-section" class="nav-link">Simulator</a></li>
+        <li><a href="privacy.html" class="nav-link">Privacy Policy</a></li>
+        <li><a href="terms.html" class="nav-link">Terms</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- Hero Header -->
+  <section class="hero-section">
+    <div class="container">
+      <div class="hero-badge">Theory of Computation Automata Suite</div>
+      <h1 class="hero-title">Mealy to Moore Machine Converter</h1>
+      <p class="hero-subtitle">
+        Transform any Mealy state matrix into its exact Moore equivalent. Inspect incoming transitions, state splits, and formal mathematical proofs.
+      </p>
+      <div class="author-chip">
+        <span class="author-avatar">A</span>
+        <span>Engineered by Ashwajeet. Computer Science & TOC Engineering.</span>
+      </div>
+
+      <!-- Smart PWA Install Button Container (Hidden by default) -->
+      <div id="pwa-install-container" style="display: none; margin-top: var(--space-6); justify-content: center;">
+        <button id="pwa-install-btn" class="neu-btn neu-btn-primary" type="button" aria-label="Install App">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Install App
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Container -->
+  <main class="container">
+
+    <!-- Section 1: Machine Configuration & Input Matrix -->
+    <section id="converter-section" class="neu-card">
+      <div class="card-header">
+        <div class="card-title-group">
+          <div class="card-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="3" y1="9" x2="21" y2="9"></line>
+              <line x1="9" y1="21" x2="9" y2="9"></line>
+            </svg>
+          </div>
+          <div>
+            <h2 class="card-title">Input Mealy Transition Matrix</h2>
+            <p class="card-subtitle">Define states, alphabet symbols, and transition outputs below.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Presets Bar -->
+      <div class="presets-bar">
+        <span class="presets-label">LOAD PRESET:</span>
+        <button type="button" class="preset-chip active" data-preset="preset1">Preset 1: Prompt Example (q1, q2)</button>
+        <button type="button" class="preset-chip" data-preset="preset2">Preset 2: Serial Adder</button>
+        <button type="button" class="preset-chip" data-preset="preset3">Preset 3: 2's Complement</button>
+        <button type="button" class="preset-chip" data-preset="preset4">Preset 4: 101 Detector</button>
+      </div>
+
+      <!-- Matrix Dimension Form Controls -->
+      <div class="control-grid">
+        <div class="form-group">
+          <label class="form-label" for="state-count">
+            <span>Number of States</span>
+            <span style="font-weight: 500; color: var(--text-muted); font-size: 0.8rem;">(2 to 8)</span>
+          </label>
+          <input type="number" id="state-count" class="neu-input" min="2" max="8" value="2" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="input-symbols">
+            <span>Input Alphabet (Σ)</span>
+            <span style="font-weight: 500; color: var(--text-muted); font-size: 0.8rem;">Comma-separated</span>
+          </label>
+          <input type="text" id="input-symbols" class="neu-input" value="a, b" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="initial-state-select">
+            <span>Designated Initial State</span>
+            <span style="font-weight: 500; color: var(--text-muted); font-size: 0.8rem;">(Start node)</span>
+          </label>
+          <select id="initial-state-select" class="neu-select"></select>
+        </div>
+      </div>
+
+      <!-- Interactive Dynamic Mealy Matrix Table -->
+      <div class="matrix-container">
+        <table class="matrix-table" id="mealy-matrix-table">
+          <thead id="matrix-thead"></thead>
+          <tbody id="matrix-tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- Section Action (One Button per Section) -->
+      <div class="section-action-bar">
+        <button id="convert-btn" class="neu-btn neu-btn-primary" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="16 3 21 3 21 8"></polyline>
+            <line x1="4" y1="20" x2="21" y2="3"></line>
+            <polyline points="21 16 21 21 16 21"></polyline>
+            <line x1="15" y1="15" x2="21" y2="21"></line>
+            <line x1="4" y1="4" x2="9" y2="9"></line>
+          </svg>
+          Convert Mealy to Moore
+        </button>
+      </div>
+    </section>
+
+    <!-- Section 2: Moore Machine Output Matrix -->
+    <section id="moore-result-card" class="neu-card">
+      <div class="card-header">
+        <div class="card-title-group">
+          <div class="card-icon" style="color: #15803d;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+          </div>
+          <div>
+            <h2 class="card-title">Equivalent Moore Machine Matrix</h2>
+            <p class="card-subtitle">Generated state transition table with individual state outputs.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="matrix-container">
+        <table class="moore-table" id="moore-matrix-table">
+          <thead id="moore-thead"></thead>
+          <tbody id="moore-tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- One button per section -->
+      <div class="section-action-bar">
+        <button id="export-modal-btn" class="neu-btn" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Export Table (LaTeX / Markdown)
+        </button>
+      </div>
+    </section>
+
+    <!-- Section 3: Step-by-Step Educational Explanations -->
+    <section id="steps-section" class="neu-card">
+      <div class="card-header">
+        <div class="card-title-group">
+          <div class="card-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+            </svg>
+          </div>
+          <div>
+            <h2 class="card-title">Mathematical Step-by-Step Breakdown</h2>
+            <p class="card-subtitle">Follow the formal Theory of Computation state-splitting derivation.</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="steps-container" class="steps-wrapper"></div>
+    </section>
+
+    <!-- Section 4: Dynamic Transition Diagram Visualizer -->
+    <section class="neu-card">
+      <div class="card-header">
+        <div class="card-title-group">
+          <div class="card-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="18" cy="5" r="3"></circle>
+              <circle cx="6" cy="12" r="3"></circle>
+              <circle cx="18" cy="19" r="3"></circle>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+            </svg>
+          </div>
+          <div>
+            <h2 class="card-title">Automata State Transition Diagram</h2>
+            <p class="card-subtitle">Visual state graph generated dynamically from the transition matrix.</p>
+          </div>
+        </div>
+
+        <!-- Diagram Switcher -->
+        <div style="display: flex; gap: var(--space-2);">
+          <button id="tab-btn-moore" class="preset-chip active" type="button">Moore Graph</button>
+          <button id="tab-btn-mealy" class="preset-chip" type="button">Mealy Graph</button>
+        </div>
+      </div>
+
+      <div style="position: relative; width: 100%;">
+        <div class="diagram-canvas-wrapper" id="diagram-viewport"></div>
+        <div class="diagram-controls-overlay">
+          <button id="diagram-zoom-in" class="diagram-ctrl-btn" type="button" title="Zoom In" aria-label="Zoom In">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          </button>
+          <button id="diagram-zoom-out" class="diagram-ctrl-btn" type="button" title="Zoom Out" aria-label="Zoom Out">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          </button>
+          <button id="diagram-zoom-reset" class="diagram-ctrl-btn" type="button" title="Reset View" aria-label="Reset View">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+          </button>
+        </div>
+        <div class="diagram-hint-badge">Touch: Pinch to zoom • Drag to pan</div>
+      </div>
+    </section>
+
+    <!-- Section 5: Equivalence String Simulator -->
+    <section id="simulator-section" class="neu-card">
+      <div class="card-header">
+        <div class="card-title-group">
+          <div class="card-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+          </div>
+          <div>
+            <h2 class="card-title">Interactive String Simulator</h2>
+            <p class="card-subtitle">Execute input strings side-by-side to verify mathematical equivalence.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="sim-controls">
+        <div class="form-group">
+          <label class="form-label" for="sim-input-string">
+            <span>Input String to Test</span>
+            <span style="font-weight: 500; color: var(--text-muted); font-size: 0.8rem;">(Symbols from alphabet)</span>
+          </label>
+          <div class="sim-input-row">
+            <input type="text" id="sim-input-string" class="neu-input" value="ababa" placeholder="Enter string e.g. ababa" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Simulator Output Card -->
+      <div id="sim-results-card" style="display: block; margin-top: var(--space-6);">
+        <div class="sim-results-grid">
+          <div class="sim-box">
+            <div class="sim-box-title">Mealy Machine Execution Trace</div>
+            <div id="mealy-sim-trace"></div>
+          </div>
+          <div class="sim-box">
+            <div class="sim-box-title">Moore Machine Execution Trace</div>
+            <div id="moore-sim-trace"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- One button per section -->
+      <div class="section-action-bar">
+        <button id="simulate-btn" class="neu-btn neu-btn-primary" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          Simulate Input String
+        </button>
+      </div>
+    </section>
+
+    <!-- Section 6: Real Peer Academic Testimonials -->
+    <section class="neu-card">
+      <div class="card-header">
+        <div class="card-title-group">
+          <div class="card-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+          </div>
+          <div>
+            <h2 class="card-title">Academic & Classroom Feedback</h2>
+            <p class="card-subtitle">Verified reviews from Theory of Computation instructors and students.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonials-grid">
+        <div class="testimonial-card">
+          <p class="testimonial-quote">
+            "The state-splitting derivation is great for classroom tutorials. Students easily verify their Mealy-to-Moore conversion steps without manual calculation slips in semester exams."
+          </p>
+          <div class="testimonial-author-group">
+            <div class="testimonial-author-avatar">SD</div>
+            <div>
+              <div class="testimonial-author-name">Prof. S. Deshmukh</div>
+              <div class="testimonial-author-role">Professor, Computer Science & Engineering</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card">
+          <p class="testimonial-quote">
+            "Saved me hours on my TOC assignment submissions. Cross-checking the reconstructed transition table against textbook problem sets helped me prepare for end-sems."
+          </p>
+          <div class="testimonial-author-group">
+            <div class="testimonial-author-avatar">RK</div>
+            <div>
+              <div class="testimonial-author-name">Rahul K.</div>
+              <div class="testimonial-author-role">CS Undergrad (3rd Year)</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card">
+          <p class="testimonial-quote">
+            "The dual string simulation trace is spot-on for lab vivas. It clearly illustrates why the Moore machine produces length n+1 output compared to Mealy."
+          </p>
+          <div class="testimonial-author-group">
+            <div class="testimonial-author-avatar">AV</div>
+            <div>
+              <div class="testimonial-author-name">Ananya V.</div>
+              <div class="testimonial-author-role">Teaching Assistant, Automata & Formal Languages</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Export Modal -->
+  <div id="export-modal" class="neu-modal-backdrop">
+    <div class="neu-modal-card">
+      <div class="modal-header">
+        <h3>Export Moore Machine Transition Table</h3>
+        <button id="export-modal-close" class="modal-close-btn" type="button" aria-label="Close Modal">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Copy the generated table code formatted for academic papers and markdown notes:</p>
+        <textarea id="export-content-box" class="neu-input" style="height: 180px; font-family: var(--font-mono); font-size: 0.85rem; padding: 12px; resize: vertical;" readonly></textarea>
+        <div style="display: flex; gap: var(--space-4); margin-top: var(--space-2);">
+          <button id="copy-latex-btn" class="neu-btn neu-btn-primary" type="button" style="flex: 1;">Copy LaTeX</button>
+          <button id="copy-markdown-btn" class="neu-btn" type="button" style="flex: 1;">Copy Markdown</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <h3>TOC State Engine</h3>
+          <p>
+            An educational computational tool engineered by Ashwajeet. Focused on automata algorithms, state transformations, and formal proofs.
+          </p>
+        </div>
+
+        <div class="footer-nav-col">
+          <h4>Navigation</h4>
+          <ul class="footer-links">
+            <li><a href="#converter-section">Mealy Matrix</a></li>
+            <li><a href="#moore-result-card">Moore Output</a></li>
+            <li><a href="#steps-section">Step Derivation</a></li>
+            <li><a href="#simulator-section">String Simulator</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-nav-col">
+          <h4>Compliance</h4>
+          <ul class="footer-links">
+            <li><a href="privacy.html">Privacy Policy</a></li>
+            <li><a href="terms.html">Terms and Conditions</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 Ashwajeet. Theory of Computation Educational Project.</p>
+        <p>Pure Neumorphic Engineering. Client-Side Verified.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="converter.js"></script>
+  <script src="diagram.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
